@@ -17,7 +17,13 @@ export function App() {
         const buffer = await resp.arrayBuffer();
         const workbook = XLSX.read(buffer, { type: 'array' });
         const hoja = workbook.Sheets[workbook.SheetNames[0]];
-        const filas = XLSX.utils.sheet_to_json<Zapatilla>(hoja);
+        const filasRaw = XLSX.utils.sheet_to_json<Record<string, unknown>>(hoja);
+        const filas = filasRaw.map((r) => ({
+          ...r,
+          Precio: Number(r.Precio ?? r.Precio_Oferta_PEN ?? r.Precio_Lista_PEN ?? 0),
+          Moneda: String(r.Moneda ?? 'PEN'),
+          'Fecha de scrapeo': String(r['Fecha de scrapeo'] ?? r.Fecha_Extraccion ?? 'Sin registro'),
+        })) as unknown as Zapatilla[];
         setProductos(filas);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error leyendo Excel');
