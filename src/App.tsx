@@ -3,6 +3,24 @@ import * as XLSX from 'xlsx';
 import { Search, ExternalLink, Clock, Tag, Store } from 'lucide-react';
 import { buscarConBM25, type Zapatilla } from './lib/bm25';
 
+function getWorkingStoreUrl(tienda: string, marca: string, modelo: string): string {
+  const query = `${marca || ''} ${modelo || ''}`.trim();
+  const encoded = encodeURIComponent(query);
+  const store = (tienda || '').toLowerCase();
+
+  if (store.includes('marathon')) {
+    return `https://www.marathon.store/pe/search/?text=${encoded}`;
+  }
+  if (store.includes('triathlon')) {
+    return `https://www.triathlon.com.pe/${encoded}?_q=${encoded}&map=ft`;
+  }
+  if (store.includes('footloose')) {
+    return `https://www.footloose.pe/${encoded}?_q=${encoded}&map=ft`;
+  }
+
+  return `https://www.google.com/search?q=${encodeURIComponent(`${tienda} ${query}`)}`;
+}
+
 export function App() {
   const [productos, setProductos] = useState<Zapatilla[]>([]);
   const [busqueda, setBusqueda] = useState('');
@@ -108,9 +126,9 @@ export function App() {
                   )}
                   <td style={{ padding: '0.75rem' }}>
                     <a
-                      href={item.URL}
+                      href={getWorkingStoreUrl(item.Tienda, item.Marca, item.Modelo)}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                       style={{ color: '#2563eb', display: 'inline-flex', alignItems: 'center', gap: 4 }}
                     >
                       Ver tienda <ExternalLink size={14} />
