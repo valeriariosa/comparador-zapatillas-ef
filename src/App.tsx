@@ -3,9 +3,48 @@ import * as XLSX from 'xlsx';
 import { Search, ExternalLink, Clock, Tag, Store } from 'lucide-react';
 import { buscarConBM25, type Zapatilla } from './lib/bm25';
 
+const MODEL_QUERY_MAP: Record<string, string> = {
+  // Marathon Sports
+  'air zoom pegasus 41': 'Nike Pegasus',
+  'ultraboost light': 'Adidas Ultraboost',
+  'deviate nitro 2': 'Puma Deviate Nitro',
+  'fresh foam x 1080v13': 'New Balance 1080',
+  'air max sc': 'Nike Air Max SC',
+  'grand court 2.0': 'Adidas Grand Court',
+  'smash v2 l': 'Puma Smash',
+  '574 core': 'New Balance 574',
+  'go run ride 11': 'Skechers Go Run',
+  'revolution 7': 'Nike Revolution',
+
+  // Triathlon Sport
+  'air zoom rival fly 3': 'Nike Rival Fly',
+  'duramo speed': 'Adidas Duramo',
+  'transport': 'Puma Transport',
+  '520v8': 'New Balance 520',
+  "d'lites fresh start": 'Skechers Dlites',
+  'run 70s': 'Adidas Run 70s',
+  'court vision low next nature': 'Nike Court Vision',
+  'carina 2.0': 'Puma Carina',
+  '327': 'New Balance 327',
+  'arch fit paradyme': 'Skechers Arch Fit',
+
+  // Footloose
+  'uno stand on air': 'Skechers Uno',
+  'breaknet 2.0': 'Adidas Breaknet',
+  'rebound v6 low': 'Puma Rebound',
+  'downshifter 13': 'Nike Downshifter',
+  'summits': 'Skechers Summits',
+  'caven 2.0': 'Puma Caven',
+  'galaxy 6': 'Adidas Galaxy',
+  '500': 'New Balance 500',
+  'go walk joy': 'Skechers Go Walk',
+  'rickie': 'Puma Rickie',
+};
+
 function getWorkingStoreUrl(tienda: string, marca: string, modelo: string): string {
-  const query = `${marca || ''} ${modelo || ''}`.trim();
-  const encoded = encodeURIComponent(query);
+  const modelKey = (modelo || '').trim().toLowerCase();
+  const cleanQuery = MODEL_QUERY_MAP[modelKey] || `${marca || ''} ${modelo || ''}`.trim();
+  const encoded = encodeURIComponent(cleanQuery);
   const store = (tienda || '').toLowerCase();
 
   if (store.includes('marathon')) {
@@ -18,7 +57,7 @@ function getWorkingStoreUrl(tienda: string, marca: string, modelo: string): stri
     return `https://www.footloose.pe/${encoded}?_q=${encoded}&map=ft`;
   }
 
-  return `https://www.google.com/search?q=${encodeURIComponent(`${tienda} ${query}`)}`;
+  return `https://www.google.com/search?q=${encodeURIComponent(`${tienda} ${cleanQuery}`)}`;
 }
 
 export function App() {
